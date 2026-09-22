@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,13 +24,13 @@ public class PessoaController {
 	}
 
 	@GetMapping
-	public List<Pessoa> obterPessoas(){
+	public List<PessoaDto> obterPessoas(){
 		return pessoaService.obterPessoas();
 	}
 
 	@GetMapping("/{username}")
-	public Pessoa obterPessoa(@PathVariable("username") String username){
-		Optional<Pessoa> optPessoa = pessoaService.obterPessoa(username);
+	public PessoaDto obterPessoa(@PathVariable("username") String username){
+		Optional<PessoaDto> optPessoa = pessoaService.obterPessoa(username);
 
 		if(optPessoa.isEmpty()){
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -38,26 +40,45 @@ public class PessoaController {
 	}
 
 	@PostMapping("/sem-validacao")
-	public ResponseEntity<?> incluirNovo(@RequestBody Pessoa pessoa){
-		pessoaService.incluirNovaPessoa(pessoa);
+	public ResponseEntity<?> incluirNovo(@RequestBody PessoaDto pessoaDto){
+		pessoaService.incluirNovaPessoa(pessoaDto);
 		URI location = ServletUriComponentsBuilder
 			.fromCurrentContextPath()
 			.path("/pessoas/{username}")
-			.buildAndExpand(pessoa.getUsername())
+			.buildAndExpand(pessoaDto.getUsername())
 			.toUri();
 		return ResponseEntity.created(location).build();
 	}
 
 	@PostMapping
-	public ResponseEntity<?> incluirNovoComValidacao(@RequestBody @Valid Pessoa pessoa){
-		pessoaService.incluirNovaPessoa(pessoa);
+	public ResponseEntity<?> incluirNovoComValidacao(@RequestBody @Valid PessoaDto pessoaDto){
+		pessoaService.incluirNovaPessoa(pessoaDto);
 
 		URI location = ServletUriComponentsBuilder
 			.fromCurrentContextPath()
 			.path("/pessoas/{username}")
-			.buildAndExpand(pessoa.getUsername())
+			.buildAndExpand(pessoaDto.getUsername())
 			.toUri();
 
 		return ResponseEntity.created(location).build();
+	}
+
+	@PutMapping("/{username}")
+	public ResponseEntity<?> atualizar(@PathVariable("username") String username, @RequestBody @Valid PessoaAlteracaoDto pessoa){
+		PessoaDto pessoaDtoAlterada = pessoaService.alterarPessoa(username, pessoa);
+		return ResponseEntity.ok().body(pessoaDtoAlterada);
+	}
+
+	@DeleteMapping("/{username}")
+	public ResponseEntity<?> remover(@PathVariable("username") String username){
+		pessoaService.removerPessoa(username);
+		return ResponseEntity.noContent().build();
+	}
+
+	@ExceptionHandler(NaoEncontradoException.class)
+	public ResponseEntity<ProblemDetail> tratarExcecao(NaoEncontradoException ex){
+		ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatusCode.valueOf(404), ex.getMessage());
+
+		return ResponseEntity.of(pd).build();
 	}
 }

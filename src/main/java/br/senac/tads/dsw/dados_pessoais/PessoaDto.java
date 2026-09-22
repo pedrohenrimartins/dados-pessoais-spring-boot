@@ -10,8 +10,8 @@ import java.util.List;
 
 
 @SenhasIguais
-public class Pessoa {
-	private int id;
+public class PessoaDto {
+	private Integer id;
 
 	@NotBlank(message = "O username é obrigatório")
 	@Size(max = 64)
@@ -40,10 +40,10 @@ public class Pessoa {
 
 	private List<String> conhecimentos;
 
-	public Pessoa() {
+	public PessoaDto() {
 	}
 
-	public Pessoa(int id, String username, String nome, String email, String telefone, LocalDate dataNascimento) {
+	public PessoaDto(Integer id, String username, String nome, String email, String telefone, LocalDate dataNascimento) {
 		this.id = id;
 		this.username = username;
 		this.nome = nome;
@@ -52,9 +52,7 @@ public class Pessoa {
 		this.dataNascimento = dataNascimento;
 	}
 
-	public int getId() {
-		return id;
-	}
+
 
 	public String getUsername() {
 		return username;
@@ -88,7 +86,43 @@ public class Pessoa {
 		return conhecimentos;
 	}
 
-	public void setId(int id) {
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public void setDataNascimento(LocalDate dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	public void setSenhaRepeticao(String senhaRepeticao) {
+		this.senhaRepeticao = senhaRepeticao;
+	}
+
+	public void setConhecimentos(List<String> conhecimentos) {
+		this.conhecimentos = conhecimentos;
 	}
 }
