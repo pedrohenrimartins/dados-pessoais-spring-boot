@@ -81,4 +81,10 @@ public class PessoaController {
 
 		return ResponseEntity.of(pd).build();
 	}
+
+	// GET /pessoas/busca?q=<termo>
+	@GetMapping("/busca")
+	public ResponseEntity<List<PessoaDto>> buscarPessoas(@RequestParam("q") String termo) {
+		return ResponseEntity.ok(pessoaService.buscarPessoas(termo));
+	}
 }
